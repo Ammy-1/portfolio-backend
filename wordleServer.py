@@ -1,10 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from english_words import get_english_words_set
 from random import choice
 
 app = Flask(__name__)
-CORS(app, origins="*")  # Allow CORS requests only from your frontend
+CORS(app, origins="*") 
 
 targetWord = ''
 
@@ -12,21 +11,11 @@ targetWord = ''
 @app.route("/wordle/word", methods=['GET'])
 def getWord():
     global targetWord
-    with open("wordBank.txt", 'r') as file:
-        if not file.readline(): 
-            getbank()
-        file.seek(0)  
+    with open("wordleBank.txt", 'r') as file: 
         words = file.read().splitlines()
+        file.close()
     targetWord = choice(words)
-    return jsonify({'word': targetWord.strip()})
-
-
-def getbank():
-    with open("wordBank.txt", 'w') as file:
-        allWords = get_english_words_set(['gcide'], lower=True, alpha=True)
-        for word in allWords:
-            if len(word) == 5:
-                file.write(word.upper() + '\n')
+    return jsonify({'word': targetWord.strip().upper()})
 
 ## checks player's guess against the word
 @app.route("/wordle/check", methods=['POST'])
@@ -48,17 +37,14 @@ def getFeedback(guess, targetWord):
             feedback.append('#aaa') 
     return feedback
 
-## gets a word to be guessed by the player
+## gets a guess word for the player
 @app.route("/wordle/random", methods=['GET'])
 def getRandom():
-    with open("wordBank.txt", 'r') as file:
-        if not file.readline(): 
-            getbank()
-        file.seek(0)  
+    with open("guessBank.txt", 'r') as file:
         words = file.read().splitlines()
         file.close()
     randGuess = choice(words)
-    return jsonify({'random': randGuess.strip()})
+    return jsonify({'random': randGuess.strip().upper()})
 
 
 if __name__ == '__main__':
