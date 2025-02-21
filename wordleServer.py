@@ -15,8 +15,8 @@ def getWord():
     with open("wordleBank.txt", 'r') as file: 
         words = file.read().splitlines()
         file.close()
-    targetWord = choice(words)
-    return jsonify({'word': targetWord.strip().upper()})
+    targetWord = choice(words).upper()
+    return jsonify({'word': targetWord.strip()})
 
 ## checks player's guess against the word
 @app.route("/wordle/check", methods=['POST'])
@@ -25,6 +25,12 @@ def checkWord():
     data = request.get_json()
     guess = data.get('guess')
     feedback = getFeedback(guess, targetWord)
+    with open("guessBank.txt", 'r') as file: 
+        acceptedWords = file.read().splitlines()
+        file.close()
+    if guess.lower() not in acceptedWords:
+        return jsonify({"errmsg": "Not in word list"}), 400
+    print(targetWord)
     return jsonify({"feedback": feedback})
 
 def getFeedback(guess, targetWord):
