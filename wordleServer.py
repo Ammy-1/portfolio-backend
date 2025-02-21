@@ -7,6 +7,7 @@ CORS(app, origins="*")
 
 targetWord = ''
 
+## word Banks are adapted from https://github.com/Kinkelin/WordleCompetition/tree/main/data/official
 ## gets a word to be guessed by the player
 @app.route("/wordle/word", methods=['GET'])
 def getWord():
